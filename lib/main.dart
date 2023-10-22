@@ -1,125 +1,220 @@
+// - 과제에서 지난번에 작성된 산출물을 다음과 같이 개선할 것
+//     - 산출물을 한번 정리Refine할 것
+//     - 공통되는 기능들을 포함하는 간단한 화면 설계를 추가할 것
+//         - 메인 화면 1개, 5개 정도의 서브화면(화면 또는 다이얼로그)
+//         - 과제 2의 결과물 활용을 추천
+//     - 위에서 설계한 화면을 Flutter로 작성할 것
+//         - 화면에 나타나는 정보는 별도의 클래스로 작성할 것
+//         - Model-View Seperation
+
+// main.dart
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false, //디버그 배너 제거
+      title: 'myTodoList',
+      home: HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  //할 일 저장 리스트, bool값은 체크리스트 상태 저장용
+  List<Map<String, dynamic>> _todoList = [
+    {"todo": "과제 제출", "bool": false},
+    {"todo": "술 약속", "bool": false},
+    {"todo": "분리수거 하기", "bool": false},
+  ];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  List<Map<String, dynamic>> _showList = []; //필터를 위한 출력 전용 리스트
+
+  final txtcon = TextEditingController(); //Dialog의 텍스트필드 컨트롤러
+  List<bool> isSelected = [false, false, false]; //Appbar의 토글버튼 상태
+
+  @override
+  initState() {
+    //초기화
+    _showList = _todoList;
+    super.initState();
+  }
+
+  void _runFilter(String enteredKeyword) {
+    //필터 동작 함수
+    List<Map<String, dynamic>> results = [];
+    results = enteredKeyword.isEmpty
+        ? _todoList //textfield가 비었을 때 동작
+        : _todoList //textfield에 값이 입력되었을 때 동작
+            .where((value) => value["todo"]
+                .toLowerCase()
+                .contains(enteredKeyword.toLowerCase()))
+            .toList();
+
+    setState(() => _showList = results);
+  }
+
+  void _toggleFilter(var tog, bool check) {
+    //토글버튼 클릭 시 동작 함수
+    List<Map<String, dynamic>> results = [];
+    //check 검사 이유 : 같은 토글버튼 2번 클릭시 동작을 else에 정의하기 위해
+    if (tog == 0 && check == true) {
+      //전체
+      results = _todoList;
+    } else if (tog == 1 && check == true) {
+      //완료
+      results = _todoList.where((value) => value["bool"] == true).toList();
+    } else if (tog == 2 && check == true) {
+      //미완료
+      results = _todoList.where((value) => value["bool"] == false).toList();
+    } else {
+      results = _todoList;
+    }
+    setState(() => _showList = results);
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('My Todo List'),
+        actions: [
+          ToggleButtons(
+            isSelected: isSelected,
+            selectedColor: Colors.white,
+            children: const [
+              Text("전체"),
+              Text("완료"),
+              Text("미완료"),
+            ],
+            onPressed: (index) {
+              //index=눌린 버튼의 인덱스
+              for (int i = 0; i < 3; i++) {
+                if (i == index) {
+                  //눌린 버튼에 해당되는 filter 작동
+                  isSelected[i] = !isSelected[i];
+                  _toggleFilter(i, isSelected[i]);
+                } else {
+                  //나머지 버튼은 선택상태 해제
+                  isSelected[i] = false;
+                }
+              }
+            },
+          )
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(10),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          children: [
+            const SizedBox(height: 20),
+            TextField(
+              //검색 필터
+              onChanged: (value) => _runFilter(value),
+              decoration: const InputDecoration(
+                labelText: 'Search',
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const SizedBox(height: 20),
+            Expanded(
+              child: _showList.isNotEmpty
+                  //출력용 리스트가 비어있지 않으면
+                  ? ListView.builder(
+                      itemCount: _showList.length,
+                      itemBuilder: (context, index) => Card(
+                        color: Colors.amberAccent,
+                        elevation: 4,
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: _showList[index]['bool'],
+                            onChanged: (value) {
+                              _showList[index]['bool'] = value;
+                              setState(() => _todoList = _showList);
+                            },
+                          ),
+                          title: _showList[index]['bool'] //체크 시 취소선 추가
+                              //체크 상태(true)라면
+                              ? Text(
+                                  _showList[index]['todo'],
+                                  style: const TextStyle(
+                                      decoration: TextDecoration.lineThrough),
+                                )
+                              //체크 해제 상태(false)라면
+                              : Text(_showList[index]['todo']),
+                          trailing: ElevatedButton(
+                            //삭제 버튼
+                            child: const Text("X"),
+                            onPressed: () {
+                              _showList.removeAt(index);
+                              setState(() => _todoList = _showList);
+                            },
+                          ),
+                        ),
+                      ),
+                    )
+                  //출력용 리스트가 비어있으면
+                  : const Text('No results found',
+                      style: TextStyle(fontSize: 24)),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: const Text("+"),
+        onPressed: () {
+          //클릭 시 다이얼로그 출력
+          showDialog(
+            context: context,
+            barrierDismissible: false, //다이얼로그 바깥 클릭 시 탈출 방지
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("할 일 입력"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(controller: txtcon),
+                    ElevatedButton(
+                      //추가 버튼
+                      child: const Text("추가하기"),
+                      onPressed: () {
+                        Map<String, dynamic> item = {
+                          "todo": txtcon.text,
+                          "bool": false
+                        };
+                        _showList.add(item);
+                        txtcon.clear();
+                        setState(() => _todoList = _showList);
+                      },
+                    ),
+                  ],
+                ),
+                actions: [
+                  //닫기 버튼
+                  ElevatedButton(
+                    child: const Text("닫기"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
