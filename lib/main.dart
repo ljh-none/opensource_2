@@ -1,220 +1,148 @@
-// - 과제에서 지난번에 작성된 산출물을 다음과 같이 개선할 것
-//     - 산출물을 한번 정리Refine할 것
-//     - 공통되는 기능들을 포함하는 간단한 화면 설계를 추가할 것
-//         - 메인 화면 1개, 5개 정도의 서브화면(화면 또는 다이얼로그)
-//         - 과제 2의 결과물 활용을 추천
-//     - 위에서 설계한 화면을 Flutter로 작성할 것
-//         - 화면에 나타나는 정보는 별도의 클래스로 작성할 것
-//         - Model-View Seperation
+// - 과제 3: 1차 개발
+//     - 팀 과제에서 지난번에 작성된 산출물을 다음과 같이 개선할 것
+//         - 산출물을 한번 정리Refine할 것
+//         - 공통되는 기능들을 포함하는 간단한 화면 설계를 추가할 것
+//             - 메인 화면 1개, 5개 정도의 서브화면(화면 또는 다이얼로그)
+//             - 과제 2의 결과물 활용을 추천
+//         - 위에서 설계한 화면을 Flutter로 작성할 것
+//             - 화면에 나타나는 정보는 별도의 클래스로 작성할 것
+//             - Model-View Seperation
 
-// main.dart
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      debugShowCheckedModeBanner: false, //디버그 배너 제거
-      title: 'myTodoList',
-      home: HomePage(),
+      debugShowCheckedModeBanner: false,
+      title: 'application',
+      home: MainFrame(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
+class MainFrame extends StatefulWidget {
+  const MainFrame({super.key});
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainFrame> createState() => _MainFrameState();
 }
 
-class _HomePageState extends State<HomePage> {
-  //할 일 저장 리스트, bool값은 체크리스트 상태 저장용
-  List<Map<String, dynamic>> _todoList = [
-    {"todo": "과제 제출", "bool": false},
-    {"todo": "술 약속", "bool": false},
-    {"todo": "분리수거 하기", "bool": false},
+class _MainFrameState extends State<MainFrame> {
+  //variable namespace
+  int _bottomIndex = 0;
+  var bottomItem = const <BottomNavigationBarItem>[
+    BottomNavigationBarItem(
+      icon: Icon(Icons.ac_unit),
+      label: "one",
+      backgroundColor: Colors.orange,
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.access_alarm),
+      label: "two",
+      backgroundColor: Colors.orange,
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.access_time),
+      label: "three",
+      backgroundColor: Colors.orange,
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.access_time_filled),
+      label: "four",
+      backgroundColor: Colors.orange,
+    ),
   ];
-
-  List<Map<String, dynamic>> _showList = []; //필터를 위한 출력 전용 리스트
-
-  final txtcon = TextEditingController(); //Dialog의 텍스트필드 컨트롤러
-  List<bool> isSelected = [false, false, false]; //Appbar의 토글버튼 상태
-
-  @override
-  initState() {
-    //초기화
-    _showList = _todoList;
-    super.initState();
+  //function
+  void _onItemTapped(int index) {
+    setState(() => _bottomIndex = index);
   }
 
-  void _runFilter(String enteredKeyword) {
-    //필터 동작 함수
-    List<Map<String, dynamic>> results = [];
-    results = enteredKeyword.isEmpty
-        ? _todoList //textfield가 비었을 때 동작
-        : _todoList //textfield에 값이 입력되었을 때 동작
-            .where((value) => value["todo"]
-                .toLowerCase()
-                .contains(enteredKeyword.toLowerCase()))
-            .toList();
-
-    setState(() => _showList = results);
+  void nothing() {
+    return;
   }
 
-  void _toggleFilter(var tog, bool check) {
-    //토글버튼 클릭 시 동작 함수
-    List<Map<String, dynamic>> results = [];
-    //check 검사 이유 : 같은 토글버튼 2번 클릭시 동작을 else에 정의하기 위해
-    if (tog == 0 && check == true) {
-      //전체
-      results = _todoList;
-    } else if (tog == 1 && check == true) {
-      //완료
-      results = _todoList.where((value) => value["bool"] == true).toList();
-    } else if (tog == 2 && check == true) {
-      //미완료
-      results = _todoList.where((value) => value["bool"] == false).toList();
-    } else {
-      results = _todoList;
-    }
-    setState(() => _showList = results);
-  }
-
+  //overriding part
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Todo List'),
         actions: [
-          ToggleButtons(
-            isSelected: isSelected,
-            selectedColor: Colors.white,
-            children: const [
-              Text("전체"),
-              Text("완료"),
-              Text("미완료"),
-            ],
-            onPressed: (index) {
-              //index=눌린 버튼의 인덱스
-              for (int i = 0; i < 3; i++) {
-                if (i == index) {
-                  //눌린 버튼에 해당되는 filter 작동
-                  isSelected[i] = !isSelected[i];
-                  _toggleFilter(i, isSelected[i]);
-                } else {
-                  //나머지 버튼은 선택상태 해제
-                  isSelected[i] = false;
-                }
-              }
-            },
-          )
+          ElevatedButton(onPressed: nothing, child: Text("location")),
+          const Spacer(),
+          ElevatedButton(onPressed: nothing, child: Text("a")),
+          ElevatedButton(onPressed: nothing, child: Text("b")),
+          ElevatedButton(onPressed: nothing, child: Text("c")),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            TextField(
-              //검색 필터
-              onChanged: (value) => _runFilter(value),
-              decoration: const InputDecoration(
-                labelText: 'Search',
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: _showList.isNotEmpty
-                  //출력용 리스트가 비어있지 않으면
-                  ? ListView.builder(
-                      itemCount: _showList.length,
-                      itemBuilder: (context, index) => Card(
-                        color: Colors.amberAccent,
-                        elevation: 4,
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        child: ListTile(
-                          leading: Checkbox(
-                            value: _showList[index]['bool'],
-                            onChanged: (value) {
-                              _showList[index]['bool'] = value;
-                              setState(() => _todoList = _showList);
-                            },
-                          ),
-                          title: _showList[index]['bool'] //체크 시 취소선 추가
-                              //체크 상태(true)라면
-                              ? Text(
-                                  _showList[index]['todo'],
-                                  style: const TextStyle(
-                                      decoration: TextDecoration.lineThrough),
-                                )
-                              //체크 해제 상태(false)라면
-                              : Text(_showList[index]['todo']),
-                          trailing: ElevatedButton(
-                            //삭제 버튼
-                            child: const Text("X"),
-                            onPressed: () {
-                              _showList.removeAt(index);
-                              setState(() => _todoList = _showList);
-                            },
-                          ),
-                        ),
-                      ),
-                    )
-                  //출력용 리스트가 비어있으면
-                  : const Text('No results found',
-                      style: TextStyle(fontSize: 24)),
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: bottomItem,
+        selectedItemColor: Colors.pink,
+        unselectedItemColor: Colors.blue,
+        currentIndex: _bottomIndex,
+        onTap: _onItemTapped,
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Text("+"),
-        onPressed: () {
-          //클릭 시 다이얼로그 출력
-          showDialog(
-            context: context,
-            barrierDismissible: false, //다이얼로그 바깥 클릭 시 탈출 방지
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("할 일 입력"),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(controller: txtcon),
-                    ElevatedButton(
-                      //추가 버튼
-                      child: const Text("추가하기"),
-                      onPressed: () {
-                        Map<String, dynamic> item = {
-                          "todo": txtcon.text,
-                          "bool": false
-                        };
-                        _showList.add(item);
-                        txtcon.clear();
-                        setState(() => _todoList = _showList);
-                      },
-                    ),
-                  ],
-                ),
-                actions: [
-                  //닫기 버튼
-                  ElevatedButton(
-                    child: const Text("닫기"),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ),
+      body: <Widget>[
+        HomePage(),
+        ChatPage(),
+      ][_bottomIndex],
     );
   }
 }
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text("data");
+  }
+}
+
+class ChatPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        ListTile(
+          title: Text("tile1"),
+        ),
+        ListTile(
+          title: Text("tile2"),
+        ),
+      ],
+    );
+  }
+}
+
+
+
+// class CommunityPage extends StatefulWidget {
+//   const CommunityPage({super.key});
+//   @override
+//   State<CommunityPage> createState() => _CommunityPageState();
+// }
+
+// class _CommunityPageState extends State<CommunityPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Text("CommunityPage"),
+//     );
+//   }
+// }
+
+// class SettingPage extends StatefulWidget {
+//   const SettingPage({super.key});
+//   @override
+//   State<SettingPage> createState() => _SettingPageState();
+// }
+
+// class _SettingPageState extends State<SettingPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Widget(
+//       body: Text("SettingPage"),
+//     );
+//   }
+// }
