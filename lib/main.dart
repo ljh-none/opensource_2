@@ -35,33 +35,48 @@ class _MainFrameState extends State<MainFrame> {
   int _bottomIndex = 0;
   var bottomItem = const <BottomNavigationBarItem>[
     BottomNavigationBarItem(
-      icon: Icon(Icons.ac_unit),
-      label: "one",
+      icon: Icon(Icons.home),
+      label: "home",
       backgroundColor: Colors.orange,
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.access_alarm),
-      label: "two",
+      icon: Icon(Icons.chat_outlined),
+      label: "chat",
       backgroundColor: Colors.orange,
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.access_time),
-      label: "three",
-      backgroundColor: Colors.orange,
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.access_time_filled),
-      label: "four",
+      icon: Icon(Icons.person),
+      label: "setting",
       backgroundColor: Colors.orange,
     ),
   ];
+
   //function
-  void _onItemTapped(int index) {
+  void _tapBottom(int index) {
     setState(() => _bottomIndex = index);
   }
 
   void nothing() {
     return;
+  }
+
+  void isLocation() {
+    showDialog(
+      context: context,
+      //barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Search Location"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(),
+              ElevatedButton(onPressed: nothing, child: Text("search")),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   //overriding part
@@ -70,11 +85,13 @@ class _MainFrameState extends State<MainFrame> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          ElevatedButton(onPressed: nothing, child: Text("location")),
+          ElevatedButton(onPressed: isLocation, child: const Text("location")),
           const Spacer(),
-          ElevatedButton(onPressed: nothing, child: Text("a")),
-          ElevatedButton(onPressed: nothing, child: Text("b")),
-          ElevatedButton(onPressed: nothing, child: Text("c")),
+          IconButton(
+              onPressed: nothing, icon: const Icon(Icons.format_align_justify)),
+          IconButton(onPressed: nothing, icon: const Icon(Icons.search)),
+          IconButton(
+              onPressed: nothing, icon: const Icon(Icons.add_alert_rounded)),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -82,67 +99,90 @@ class _MainFrameState extends State<MainFrame> {
         selectedItemColor: Colors.pink,
         unselectedItemColor: Colors.blue,
         currentIndex: _bottomIndex,
-        onTap: _onItemTapped,
+        onTap: _tapBottom,
       ),
       body: <Widget>[
-        HomePage(),
-        ChatPage(),
+        const HomePage(),
+        const ChatPage(),
+        const SettingPage(),
       ][_bottomIndex],
+      floatingActionButton: FloatingActionButton(onPressed: nothing),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
   @override
-  Widget build(BuildContext context) {
-    return Text("data");
-  }
+  State<HomePage> createState() => _HomePageState();
 }
 
-class ChatPage extends StatelessWidget {
+class _HomePageState extends State<HomePage> {
+  //variable space
+  //function space
+  Widget _buildListItem(BuildContext context, int index) {
+    return Card(
+      color: Colors.blue.shade50,
+      margin: const EdgeInsets.symmetric(vertical: 1),
+      child: ListTile(
+        leading: Image.asset("images/EmptyImage.png"),
+        title: Text("item $index"),
+        subtitle:
+            const Row(children: [Text("Location"), Spacer(), Text("time")]),
+      ),
+    );
+  }
+
+  //overriding space
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        ListTile(
-          title: Text("tile1"),
-        ),
-        ListTile(
-          title: Text("tile2"),
-        ),
-      ],
+    return ListView.builder(
+      itemCount: 10,
+      itemBuilder: _buildListItem,
     );
   }
 }
 
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
 
+class _ChatPageState extends State<ChatPage> {
+  //function space
+  Widget _buildListItem(BuildContext context, int index) {
+    return Card(
+      color: Colors.orange.shade50,
+      margin: const EdgeInsets.symmetric(vertical: 1),
+      child: ListTile(
+        leading: Image.asset("images/EmptyProfileImage.png"),
+        title: Text("user $index"),
+        subtitle:
+            const Row(children: [Text("Location"), Spacer(), Text("time")]),
+      ),
+    );
+  }
 
-// class CommunityPage extends StatefulWidget {
-//   const CommunityPage({super.key});
-//   @override
-//   State<CommunityPage> createState() => _CommunityPageState();
-// }
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 10,
+      itemBuilder: _buildListItem,
+    );
+  }
+}
 
-// class _CommunityPageState extends State<CommunityPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Text("CommunityPage"),
-//     );
-//   }
-// }
+class SettingPage extends StatefulWidget {
+  const SettingPage({super.key});
+  @override
+  State<SettingPage> createState() => _SettingPageState();
+}
 
-// class SettingPage extends StatefulWidget {
-//   const SettingPage({super.key});
-//   @override
-//   State<SettingPage> createState() => _SettingPageState();
-// }
-
-// class _SettingPageState extends State<SettingPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Widget(
-//       body: Text("SettingPage"),
-//     );
-//   }
-// }
+class _SettingPageState extends State<SettingPage> {
+  //overriding space
+  @override
+  Widget build(BuildContext context) {
+    return const Text("setting");
+  }
+}
