@@ -10,7 +10,7 @@
 
 import 'package:flutter/material.dart';
 
-//페이지 이동을 위한 상수 및 함수
+//////페이지 이동을 위한 상수 및 함수//////////////////////////////////////////////
 const String HOMESUB = "homesub";
 const String CHATSUB = "chatsub";
 const String FLOATSUB = "floatsub";
@@ -49,23 +49,27 @@ Function gotoSub = (BuildContext context, String cls) {
   }
 };
 
-//데이터 클래스
+////////////////////////////////////////////////////////////////////////////////
+//데이터 클래스. 나중에 firebase로 대체될 기능/////////////////////////////////////
 class ItemData {
-  var _item;
-  var _user;
-  var _category;
-  var _regitime;
+  String _item;
+  String _user;
+  String _category;
+  String _regitime;
+  String _describe;
+  int _price;
+  String _location;
+
+  ItemData(this._item, this._user, this._category, this._regitime,
+      this._describe, this._price, this._location);
 }
 
-class userData {
-  var _name;
-  var _location;
-}
-
-class SettingData {
-  var _filter;
-}
-
+var _var1 = ItemData(
+    "_item", "_user", "_category", "_regitime", "_describe", 1000, "_location");
+var _var2 = ItemData(
+    "_item", "_user", "_category", "_regitime", "_describe", 2000, "_location");
+List<ItemData> obj = [_var1, _var2];
+/////////////////////////////////////////////////////////////////////////////////
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -91,7 +95,7 @@ class MyApp extends StatelessWidget {
 // - floating button 클릭 시
 //3. 다이얼로그 화면 구성
 // - location 버튼 클릭 시
-////////////////////////////메인 프레임////////////////////////////////////////////////////////
+////////////////////////////메인 프레임//////////////////////////////////////////
 class MainFrame extends StatefulWidget {
   const MainFrame({super.key});
   @override
@@ -191,8 +195,8 @@ class _MainFrameState extends State<MainFrame> {
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////홈페이지/////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////홈페이지/////////////////////////////////
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
@@ -208,9 +212,12 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.symmetric(vertical: 1),
       child: ListTile(
         leading: Image.asset("images/EmptyImage.png"),
-        title: Text("item $index"),
-        subtitle:
-            const Row(children: [Text("Location"), Spacer(), Text("time")]),
+        title: Text(obj[index]._item),
+        subtitle: Row(children: [
+          Text(obj[index]._location),
+          const Spacer(),
+          Text(obj[index]._regitime),
+        ]),
         onTap: () {
           gotoSub(context, HOMESUB);
         },
@@ -221,10 +228,12 @@ class _HomePageState extends State<HomePage> {
   //overriding space
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 10,
-      itemBuilder: _buildListItem,
-    );
+    return obj.isNotEmpty
+        ? ListView.builder(
+            itemCount: obj.length,
+            itemBuilder: _buildListItem,
+          )
+        : const Text("no Item");
   }
 }
 
@@ -245,8 +254,8 @@ class _HomePageSubState extends State<HomePageSub> {
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////채팅 페이지/////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////채팅 페이지//////////////////////////////
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
   @override
@@ -296,8 +305,8 @@ class _ChatPageSubState extends State<ChatPageSub> {
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////세팅 페이지/////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////세팅 페이지//////////////////////////////
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
   @override
@@ -311,7 +320,7 @@ class _SettingPageState extends State<SettingPage> {
     return const Text("setting");
   }
 }
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 class FloatingSub extends StatefulWidget {
   const FloatingSub({super.key});
