@@ -103,7 +103,7 @@ class MainFrame extends StatefulWidget {
 }
 
 class _MainFrameState extends State<MainFrame> {
-  //variable namespace
+  //variable space
   int _bottomIndex = 0;
   var bottomItem = const <BottomNavigationBarItem>[
     BottomNavigationBarItem(
@@ -122,8 +122,15 @@ class _MainFrameState extends State<MainFrame> {
       backgroundColor: Colors.orange,
     ),
   ];
-
-  //function
+  List<String> locationList = [
+    '양호동',
+    '서울',
+    '부산',
+    '대구',
+    '인천',
+  ];
+  String selectedLocation = "장소 선택";
+  //function space
   void _tapBottom(int index) {
     setState(() => _bottomIndex = index);
   }
@@ -132,23 +139,26 @@ class _MainFrameState extends State<MainFrame> {
     return;
   }
 
-  void isLocation() {
-    showDialog(
-      context: context,
-      //barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Search Location"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const TextField(),
-              ElevatedButton(onPressed: nothing, child: const Text("search")),
-            ],
-          ),
-        );
-      },
-    );
+  PopupMenuButton<String> _buildPopupMenuButton() {
+    return PopupMenuButton(
+        child: Container(
+          child: Center(child: Text(selectedLocation)),
+          width: 100,
+          height: 20,
+        ),
+        onSelected: (String str) {
+          setState(() {
+            selectedLocation = str;
+          });
+        },
+        itemBuilder: (BuildContext context) {
+          return locationList.map((String str) {
+            return PopupMenuItem<String>(
+              child: Text(str),
+              value: str,
+            );
+          }).toList();
+        });
   }
 
   //overriding part
@@ -157,7 +167,7 @@ class _MainFrameState extends State<MainFrame> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          ElevatedButton(onPressed: isLocation, child: const Text("location")),
+          _buildPopupMenuButton(),
           const Spacer(),
           IconButton(
               onPressed: () {
