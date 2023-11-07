@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
 // - home, chat, setting 페이지의 아이템 클릭 시
 // - appbar의 카테고리, 검색, 알람 버튼 클릭 시
 // - floating button 클릭 시
-//3. 다이얼로그 화면 구성
+//3. 다이얼로그 화면 ㅁㄴㅇㄴ이ㅏㅗㅇㅁㄴㅇㅁㅁㅂㄷㅈㅈㅂㅂㄷㅂㅈ
 // - location 버튼 클릭 시
 ////////////////////////////메인 프레임//////////////////////////////////////////
 class MainFrame extends StatefulWidget {
