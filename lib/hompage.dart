@@ -20,14 +20,14 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.symmetric(vertical: 1),
       child: ListTile(
         leading: Image.asset("images/EmptyImage.png"),
-        title: Text(Provider.of<ItemObject>(context, listen: false).getItemName(index)),
+        title: Text(Provider.of<ItemObject>(context).getItemName(index)),
         subtitle: Row(children: [
-          Text(Provider.of<ItemObject>(context, listen: false).getLocationName(index)),
+          Text(Provider.of<ItemObject>(context).getLocationName(index)),
           const Spacer(),
-          Text(Provider.of<ItemObject>(context, listen: false).getRegitimeName(index)),
+          Text(Provider.of<ItemObject>(context).getRegitimeName(index)),
         ]),
         onTap: () {
-          gotoSub(context, HOMESUB);
+          gotoSub(context, HOMESUB, index);
         },
       ),
     );
@@ -47,7 +47,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomePageSub extends StatefulWidget {
-  const HomePageSub({super.key});
+  final int index;
+  const HomePageSub({super.key, required this.index});
   @override
   State<HomePageSub> createState() => _HomePageSubState();
 }
@@ -57,8 +58,32 @@ class _HomePageSubState extends State<HomePageSub> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Item Page"),
+        title: Text(
+            "${Provider.of<ItemObject>(context).getItemName(widget.index)}"),
       ),
+      body: ListView(
+        children: <Widget>[
+          Image.asset("images/EmptyImage.png"),
+          ListTile(
+              leading: Image.asset("images/EmptyProfileImage.png"),
+              title: Text(
+                  Provider.of<ItemObject>(context).getUserName(widget.index)),
+              subtitle: Row(children: [
+                Text(Provider.of<ItemObject>(context)
+                    .getLocationName(widget.index)),
+                const Spacer(),
+                Text(Provider.of<ItemObject>(context)
+                    .getRegitimeName(widget.index)),
+              ])),
+          ListTile(title: Text("describtion")),
+        ],
+      ),
+      bottomNavigationBar: Row(children: [
+        Text(
+            Provider.of<ItemObject>(context).getPrice(widget.index).toString()),
+        const Spacer(),
+        const ElevatedButton(onPressed: nothing, child: Text("chat")),
+      ]),
     );
   }
 }

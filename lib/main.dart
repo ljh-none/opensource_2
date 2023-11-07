@@ -21,11 +21,11 @@ const String CATEGORYSUB = "categorysub";
 const String ALERTSUB = "alertsub";
 const String SEARCHSUB = "searchsub";
 
-Function gotoSub = (BuildContext context, String cls) {
+Function gotoSub = (BuildContext context, String cls, int i) {
   switch (cls) {
     case HOMESUB:
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const HomePageSub()));
+          MaterialPageRoute(builder: (context) => HomePageSub(index: i)));
       break;
     case CHATSUB:
       Navigator.push(context,
@@ -62,6 +62,7 @@ class ItemData {
   String _describe;
   int _price;
   String _location;
+  bool _chatState = false;
 
   ItemData(this._item, this._user, this._category, this._regitime,
       this._describe, this._price, this._location);
@@ -71,7 +72,6 @@ var _var1 = ItemData(
     "_item", "_user", "_category", "_regitime", "_describe", 1000, "_location");
 var _var2 = ItemData(
     "_item", "_user", "_category", "_regitime", "_describe", 2000, "_location");
-
 class ItemObject extends ChangeNotifier {
   List<ItemData> _items = [_var1, _var2];
 
@@ -84,6 +84,12 @@ class ItemObject extends ChangeNotifier {
   String getItemName(int index) => _items[index]._item;
   String getLocationName(int index) => _items[index]._location;
   String getRegitimeName(int index) => _items[index]._regitime;
+  String getUserName(int index) => _items[index]._user;
+  int getPrice(int index) => _items[index]._price;
+}
+
+void nothing() {
+  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -155,10 +161,6 @@ class _MainFrameState extends State<MainFrame> {
   //function space
   void _tapBottom(int index) {
     setState(() => _bottomIndex = index);
-  }
-
-  void nothing() {
-    return;
   }
 
   PopupMenuButton<String> _buildPopupMenuButton() {
