@@ -9,6 +9,9 @@
 //             - Model-View Seperation
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'hompage.dart';
 
 //////페이지 이동을 위한 상수 및 함수//////////////////////////////////////////////
 const String HOMESUB = "homesub";
@@ -68,9 +71,28 @@ var _var1 = ItemData(
     "_item", "_user", "_category", "_regitime", "_describe", 1000, "_location");
 var _var2 = ItemData(
     "_item", "_user", "_category", "_regitime", "_describe", 2000, "_location");
-List<ItemData> obj = [_var1, _var2];
+
+class ItemObject extends ChangeNotifier {
+  List<ItemData> _items = [_var1, _var2];
+
+  List<ItemData> get getItems => _items;
+  set setItems(ItemData i) {
+    _items.add(i);
+    notifyListeners();
+  }
+
+  String getItemName(int index) => _items[index]._item;
+  String getLocationName(int index) => _items[index]._location;
+  String getRegitimeName(int index) => _items[index]._regitime;
+}
+
 /////////////////////////////////////////////////////////////////////////////////
-void main() => runApp(const MyApp());
+void main() {
+  runApp(ChangeNotifierProvider(
+    create: (context) => ItemObject(),
+    child: MyApp(),
+  ));
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -93,7 +115,7 @@ class MyApp extends StatelessWidget {
 // - home, chat, setting 페이지의 아이템 클릭 시
 // - appbar의 카테고리, 검색, 알람 버튼 클릭 시
 // - floating button 클릭 시
-//3. 다이얼로그 화면 ㅁㄴㅇㄴ이ㅏㅗㅇㅁㄴㅇㅁㅁㅂㄷㅈㅈㅂㅂㄷㅂㅈ
+//3. 다이얼로그 화면
 // - location 버튼 클릭 시
 ////////////////////////////메인 프레임//////////////////////////////////////////
 class MainFrame extends StatefulWidget {
@@ -201,65 +223,6 @@ class _MainFrameState extends State<MainFrame> {
       floatingActionButton: FloatingActionButton(onPressed: () {
         gotoSub(context, FLOATSUB);
       }),
-    );
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////홈페이지/////////////////////////////////
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  //variable space
-  //function space
-  Widget _buildListItem(BuildContext context, int index) {
-    return Card(
-      color: Colors.blue.shade50,
-      margin: const EdgeInsets.symmetric(vertical: 1),
-      child: ListTile(
-        leading: Image.asset("images/EmptyImage.png"),
-        title: Text(obj[index]._item),
-        subtitle: Row(children: [
-          Text(obj[index]._location),
-          const Spacer(),
-          Text(obj[index]._regitime),
-        ]),
-        onTap: () {
-          gotoSub(context, HOMESUB);
-        },
-      ),
-    );
-  }
-
-  //overriding space
-  @override
-  Widget build(BuildContext context) {
-    return obj.isNotEmpty
-        ? ListView.builder(
-            itemCount: obj.length,
-            itemBuilder: _buildListItem,
-          )
-        : const Text("no Item");
-  }
-}
-
-class HomePageSub extends StatefulWidget {
-  const HomePageSub({super.key});
-  @override
-  State<HomePageSub> createState() => _HomePageSubState();
-}
-
-class _HomePageSubState extends State<HomePageSub> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Item Page"),
-      ),
     );
   }
 }
